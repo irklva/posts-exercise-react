@@ -20,5 +20,7 @@
   },
   "homepage": "https://github.com/serjio1905/interview_task#readme",
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "react-redux": "^8.0.5"
   }
 }
