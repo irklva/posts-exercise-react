@@ -1,0 +1,19 @@
+.number {
+    color: #616073;
+    font-size: 18px;
+    margin: 0 2px;
+    height: 26px;
+    width: 26px;
+    border: #616073 solid 1px;
+    border-radius: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.number.current {
+    background-color: #616073;
+    color: white;
+}
+
