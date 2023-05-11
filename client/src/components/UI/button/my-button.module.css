@@ -1,0 +1,38 @@
+.main {
+    background-color: #616073;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: white;
+    padding: 10px 50px;
+    border-radius: 38px;
+}
+
+.login {
+    width: 100%;
+}
+
+.action {
+    text-transform: none;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border: solid 1px white;
+    border-radius: 5px;
+}
+
+.body {
+    margin-right: 10px;
+    width: 30%;
+    min-width: 120px;
+    padding: 10px 0;
+}
+
+.body_second {
+    color: #616073;
+    background-color: white;
+    border: #616073 solid 1px;
+    margin-right: 10px;
+    width: 30%;
+    min-width: 120px;
+    padding: 10px 0;
+}

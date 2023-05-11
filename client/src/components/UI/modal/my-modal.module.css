@@ -1,0 +1,27 @@
+.main {
+    padding: 7px;
+    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0,0,0, 0.7);
+}
+
+.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.btn_close {
+    height: 10px;
+}
+
