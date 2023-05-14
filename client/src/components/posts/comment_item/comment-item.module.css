@@ -1,0 +1,23 @@
+.main {
+    border: #616073 solid 1px;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.text {
+    word-wrap: break-word;
+    font-size: 17px;
+    line-height: 17px;
+    margin-bottom: 5px;
+}
+
+.btn {
+    color: #616073;
+    font-size: 12px;
+    border: #616073 solid 1px;
+    border-radius: 2px;
+    padding: 0 5px;
+    margin-right: 5px;
+    height: 22px;
+}

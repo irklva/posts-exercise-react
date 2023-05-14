@@ -24,7 +24,7 @@ const Navbar = () => {
         <div className={st.main}>
             <div className={'container d-flex justify-content-between justify-content-lg-end align-items-center h-100'}>
                 <div className={'me-2 mx-lg-5 d-flex align-items-center'}>
-                    <FontAwesomeIcon icon={faUser} size="2xl" style={{color: "#ffffff",}} />
+                    <FontAwesomeIcon icon={faUser} size="xl" style={{color: "#ffffff"}} />
                     <h3>{userName}</h3>
                 </div>
                 <MyButton style={'action'} onClick={() => logout()}>

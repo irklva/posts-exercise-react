@@ -5,10 +5,10 @@ const postsAppSlice = createSlice({
     initialState: {
         userName: '',
         modalVisible: false,
-        arePostsChanged: false,
-        isPageReady: false,
+        postsNeedChanging: true,
+        needLastPage: true,
         modalWindow: {
-            title: ''
+            text: ''
         }
     },
     reducers: {
@@ -18,14 +18,14 @@ const postsAppSlice = createSlice({
         removeUser(state) {
             state.userName = '';
         },
-        setVisible(state) {
-            state.modalVisible = !state.modalVisible;
+        setVisible(state, action) {
+            state.modalVisible = action.payload;
         },
-        setArePostsChanged(state) {
-            state.arePostsChanged = !state.arePostsChanged;
+        setPostsNeedChanging(state, action) {
+            state.postsNeedChanging = action.payload;
         },
-        setIsPageReady(state) {
-            state.isPageReady = !state.isPageReady;
+        setNeedLastPage(state, action) {
+            state.needLastPage = action.payload;
         },
         setModalWindow(state, action) {
             state.modalWindow = action.payload;
@@ -33,5 +33,5 @@ const postsAppSlice = createSlice({
     }
 })
 
-export const {addUser, removeUser, setVisible, setIsPageReady, setArePostsChanged, setModalWindow} = postsAppSlice.actions;
+export const {addUser, removeUser, setVisible, setNeedLastPage, setPostsNeedChanging, setModalWindow} = postsAppSlice.actions;
 export default postsAppSlice.reducer;

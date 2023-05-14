@@ -1,0 +1,46 @@
+.main {
+    padding: 10px;
+    border: solid 1px #616073;
+    border-radius: 10px;
+}
+
+.likes {
+    width: 11px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #616073;
+    margin-right: 10px;
+}
+
+.likes.plus{
+    color: green;
+}
+
+.likes.minus{
+    color: indianred;
+}
+
+.pale_icon {
+    color: #b9b8cb;
+}
+
+.comments_sum {
+    position: absolute;
+    left: -5px;
+    bottom: -9px;
+    color: darkorange;
+    font-weight: 700;
+}
+
+.comments_sum.plus {
+    color: green;
+}
+
+.post_image {
+    max-width: 100%;
+    border-radius: 5px;
+}
+
+.error_text {
+    word-wrap: break-word;
+}

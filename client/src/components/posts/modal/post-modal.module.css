@@ -1,0 +1,42 @@
+.browse_label {
+    background-color: #d7dce0;
+    display: flex;
+    align-items: center;
+    color: #616073;
+    padding: 0 5px 0 20px;
+    min-width: 126px;
+    border-radius: 15px 0 0 15px;
+    cursor: pointer;
+}
+
+.add_file_input {
+    color: #616073;
+    border: solid 1px #d7dce0;
+    border-radius: 0 15px 15px 0;
+    cursor: pointer;
+    width: 100%;
+}
+
+.add_file_input::-webkit-file-upload-button {
+    visibility: hidden;
+    width: 0.01%;
+    margin: 0;
+    padding: 0;
+}
+
+.notification {
+    padding: 0 20px;
+    color: #616073;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+.error_text {
+    word-wrap: break-word;
+}
+
+.post_image {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-top: 15px;
+}

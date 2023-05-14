@@ -2,13 +2,13 @@ import React from 'react';
 import PostItem from "../item/PostItem";
 import PostsPaginator from "../paginator/PostsPaginator";
 
-const PostsGallery = ({posts, page, setPage, totalPages}) => {
+const PostsGallery = ({posts, setPosts, page, setPage, totalPages}) => {
 
     return (
         <>
             <div className={'row g-2 components_group'}>
-                {posts.map((post) =>
-                    <PostItem key={post.id} postData={post}/>
+                {posts.map((post, index) =>
+                    <PostItem key={post.id} posts={posts} setPosts={setPosts} postIndex={index} postData={post}/>
                 )}
             </div>
             {totalPages > 1 &&
