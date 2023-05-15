@@ -13,7 +13,7 @@ import MyLoader from "../../UI/loader/MyLoader";
 const CommentItem = ({commentData, comments, setPosts, postIndex, postData, posts, commentIndex}) => {
 
     const dispatch = useDispatch();
-    const formattedDate = moment(parseInt(commentData.date)).format('DD.MM.YY hh:mm');
+    const formattedDate = moment(parseInt(commentData.date)).format('DD.MM.YY HH:mm');
     const [errorText, setErrorText] = useState('');
 
     const newPostsArray = [...posts];

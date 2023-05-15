@@ -22,7 +22,7 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
     const comments = [...postData.comments];
     const dispatch = useDispatch();
     const [commentsVisible, setCommentsVisible] = useState(false);
-    const formattedDate = moment(parseInt(postData.date)).format('DD.MM.YY hh:mm');
+    const formattedDate = moment(parseInt(postData.date)).format('DD.MM.YY HH:mm');
     const [errorText, setErrorText] = useState('');
 
     const [deletePost, isPostDeleting, deletingError] = useFetching(async () => {
