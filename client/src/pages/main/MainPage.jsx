@@ -33,18 +33,28 @@ const MainPage = () => {
     const [fetchPosts, arePostsLoading, postError] = useFetching(async () => {
         if (changing) {
             const response = await PostService.getByPages(postsPage);
-            navigate(`/main/${postsPage}`);
+            if (response.data.totalPages === 0) {
+                setPostsPage(1);
+                navigate(`/main/1`)
+            } else {
+                navigate(`/main/${postsPage}`);
+            }
             setTotalPostsPages(response.data.totalPages);
             if (needLastPage) {
                 if (response.data.totalPages > 1) {
                     setPostsPage(response.data.totalPages);
+                    console.log('1')
                 } else {
                     setPosts([...response.data.result]);
                     dispatch(setPostsNeedChanging(false));
+                    console.log('2')
                 }
                 dispatch(setNeedLastPage(false));
             } else {
-                if (postsPage > response.data.totalPages) {
+                if (response.data.totalPages === 0) {
+                    setPosts([]);
+                    dispatch(setPostsNeedChanging(false));
+                } else if (postsPage > response.data.totalPages) {
                     setPostsPage(response.data.totalPages);
                     dispatch(setPostsNeedChanging(false));
                     dispatch(setPostsNeedChanging(true));
@@ -121,6 +131,9 @@ const MainPage = () => {
                         <div className={`text-danger ${st.error_text}`}>
                             Error: {errorText}
                         </div>
+                    }
+                    {!posts.length &&
+                        <h1 className={'my-4'}>No posts yet</h1>
                     }
                     <PostsGallery
                         totalPages={totalPostsPages}
