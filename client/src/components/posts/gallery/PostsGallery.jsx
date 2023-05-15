@@ -11,11 +11,9 @@ const PostsGallery = ({posts, setPosts, page, setPage, totalPages}) => {
                     <PostItem key={post.id} posts={posts} setPosts={setPosts} postIndex={index} postData={post}/>
                 )}
             </div>
-            {totalPages > 1 &&
-                <div className={'components_group'}>
-                    <PostsPaginator currentPage={page} pages={totalPages} changePage={setPage}/>
-                </div>
-            }
+            <div className={'components_group'}>
+                <PostsPaginator currentPage={page} pages={totalPages} changePage={setPage}/>
+            </div>
         </>
     );
 };

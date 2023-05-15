@@ -4,7 +4,7 @@ import PostLikes from "../likes/PostLikes";
 import {useFetching} from "../../../hooks/useFetching";
 import PostService from "../../../API/PostService";
 import {setModalWindow, setVisible} from "../../../system/store/postsAppSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import moment from "moment/moment";
@@ -15,12 +15,12 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
     const dispatch = useDispatch();
     const formattedDate = moment(parseInt(commentData.date)).format('DD.MM.YY HH:mm');
     const [errorText, setErrorText] = useState('');
-
     const newPostsArray = [...posts];
     const newCommentsArray = [...comments];
     const newPost = postData;
     const [success, setSuccess] = useState(false);
     const [ended, setEnded] = useState(false);
+    const userName = useSelector(state => state.postsApp.userName);
 
     const [updateComment, isCommentUpdating, updatingError] = useFetching(async (likes, dislikes) => {
         const response = await PostService.updateComment(commentData.id, commentData.title, likes, dislikes);
@@ -91,12 +91,17 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
                 :
                 <div className={'d-flex justify-content-between'}>
                     <div className={'d-flex align-items-center'}>
-                        <button className={`btn_empty ${st.btn}`} onClick={() => changeComment()}>
-                            Edit
-                        </button>
-                        <button className={`btn_empty ${st.btn}`} onClick={() => deleteComment().then(() => setEnded(true))}>
-                            Delete
-                        </button>
+                        {(userName === commentData.username) &&
+                            <>
+                                <button className={`btn_empty ${st.btn}`} onClick={() => changeComment()}>
+                                    Edit
+                                </button>
+                                <button className={`btn_empty ${st.btn}`}
+                                        onClick={() => deleteComment().then(() => setEnded(true))}>
+                                    Delete
+                                </button>
+                            </>
+                        }
                     </div>
                     <PostLikes updateLikes={updateComment} data={commentData} size={'lg'}/>
                 </div>

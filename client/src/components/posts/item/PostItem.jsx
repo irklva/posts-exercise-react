@@ -10,7 +10,7 @@ import {
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useFetching} from "../../../hooks/useFetching";
 import PostService from "../../../API/PostService";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setPostsNeedChanging, setModalWindow, setVisible} from "../../../system/store/postsAppSlice";
 import CommentItem from "../comment_item/CommentItem";
 import PostLikes from "../likes/PostLikes";
@@ -24,6 +24,7 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
     const [commentsVisible, setCommentsVisible] = useState(false);
     const formattedDate = moment(parseInt(postData.date)).format('DD.MM.YY HH:mm');
     const [errorText, setErrorText] = useState('');
+    const userName = useSelector(state => state.postsApp.userName);
 
     const [deletePost, isPostDeleting, deletingError] = useFetching(async () => {
         await PostService.delete(postData.id);
@@ -109,12 +110,16 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
                                 <div
                                     className={comments.length > 0 ? `${st.comments_sum} ${st.plus}` : st.comments_sum}>{comments.length}</div>
                             </button>
-                            <button className={'btn_empty'} onClick={() => changePost()}>
-                                <FontAwesomeIcon icon={faPenToSquare} size="xl" className={'icons'}/>
-                            </button>
-                            <button className={'btn_empty'} onClick={() => deletePost()}>
-                                <FontAwesomeIcon icon={faTrash} size="xl" className={'icons'}/>
-                            </button>
+                            {(userName === postData.username) &&
+                                <>
+                                    <button className={'btn_empty'} onClick={() => changePost()}>
+                                        <FontAwesomeIcon icon={faPenToSquare} size="xl" className={'icons'}/>
+                                    </button>
+                                    <button className={'btn_empty'} onClick={() => deletePost()}>
+                                        <FontAwesomeIcon icon={faTrash} size="xl" className={'icons'}/>
+                                    </button>
+                                </>
+                            }
                         </div>
                         <PostLikes data={postData} updateLikes={updatePost} size={'xl'}/>
                     </div>

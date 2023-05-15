@@ -31,19 +31,16 @@ const MainPage = () => {
     const params = useParams();
 
     const [fetchPosts, arePostsLoading, postError] = useFetching(async () => {
-        console.log(changing)
         if (changing) {
             const response = await PostService.getByPages(postsPage);
-            console.log(response);
+            navigate(`/main/${postsPage}`);
             setTotalPostsPages(response.data.totalPages);
             if (needLastPage) {
                 if (response.data.totalPages > 1) {
                     setPostsPage(response.data.totalPages);
-                    console.log('1')
                 } else {
                     setPosts([...response.data.result]);
                     dispatch(setPostsNeedChanging(false));
-                    console.log('2')
                 }
                 dispatch(setNeedLastPage(false));
             } else {
@@ -51,11 +48,9 @@ const MainPage = () => {
                     setPostsPage(response.data.totalPages);
                     dispatch(setPostsNeedChanging(false));
                     dispatch(setPostsNeedChanging(true));
-                    console.log('3')
                 } else {
                     setPosts([...response.data.result]);
                     dispatch(setPostsNeedChanging(false));
-                    console.log('4')
                 }
             }
             setNeedLoader(false);
@@ -70,7 +65,7 @@ const MainPage = () => {
         }
     });
 
-    const debouncedFilterPosts = useDebouncedCallback(filterPosts, 2000);
+    const debouncedFilterPosts = useDebouncedCallback(filterPosts, 1000);
 
     const updPostsByFilter = () => {
         if (searchInput) {
@@ -89,9 +84,8 @@ const MainPage = () => {
     }, [changing, needLastPage]);
 
     useEffect(() => {
-        console.log(params.id)
         if (params.id) {
-            setPostsPage(params.id);
+            setPostsPage(parseInt(params.id));
         } else {
             dispatch(setNeedLastPage(true));
         }
