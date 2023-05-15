@@ -19,6 +19,8 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
     const newPostsArray = [...posts];
     const newCommentsArray = [...comments];
     const newPost = postData;
+    const [success, setSuccess] = useState(false);
+    const [ended, setEnded] = useState(false);
 
     const [updateComment, isCommentUpdating, updatingError] = useFetching(async (likes, dislikes) => {
         const response = await PostService.updateComment(commentData.id, commentData.title, likes, dislikes);
@@ -33,11 +35,13 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
     });
 
     const [deleteComment, isCommentDeleting, deletingError] = useFetching(async () => {
-        await PostService.deleteComment(commentData.id);
+        setEnded(false);
+        setSuccess(false);
+        await PostService.deleteComment(commentData.id)
+            .then(() => setSuccess(true));
         newCommentsArray.splice(commentIndex, 1);
         newPost.comments = newCommentsArray;
         newPostsArray[postIndex] = newPost;
-        setPosts(newPostsArray);
     });
 
     const changeComment = () => {
@@ -57,6 +61,12 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
     useEffect(() => {
         setErrorText(deletingError);
     }, [deletingError]);
+
+    useEffect(() => {
+        if (ended && success) {
+            setPosts(newPostsArray);
+        }
+    }, [ended, success]);
 
     return (
         <div className={st.main}>
@@ -84,7 +94,7 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
                         <button className={`btn_empty ${st.btn}`} onClick={() => changeComment()}>
                             Edit
                         </button>
-                        <button className={`btn_empty ${st.btn}`} onClick={() => deleteComment()}>
+                        <button className={`btn_empty ${st.btn}`} onClick={() => deleteComment().then(() => setEnded(true))}>
                             Delete
                         </button>
                     </div>

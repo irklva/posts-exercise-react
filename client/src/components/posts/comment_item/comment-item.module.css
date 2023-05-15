@@ -21,3 +21,7 @@
     margin-right: 5px;
     height: 22px;
 }
+
+.error_text {
+    line-height: 20px;
+}

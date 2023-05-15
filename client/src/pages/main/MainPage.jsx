@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {usePathName} from "../../hooks/usePathName";
-import {mainPage} from "../../system/router/paths";
+import {loginPage, mainPage, postsMainPage} from "../../system/router/paths";
 import {useNavigate} from "react-router";
 import PostsControl from "../../components/posts/control_panel/PostsControl";
 import PostsGallery from "../../components/posts/gallery/PostsGallery";
@@ -82,7 +82,7 @@ const MainPage = () => {
     }, [changing, needLastPage]);
 
     useEffect(() => {
-        if (pathName !== mainPage) {
+        if (['', '/', postsMainPage, loginPage].includes(pathName)) {
             navigate(mainPage);
         }
     }, []);

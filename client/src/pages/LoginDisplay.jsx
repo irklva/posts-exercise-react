@@ -4,7 +4,7 @@ import {addUser} from "../system/store/postsAppSlice";
 import MyButton from "../components/UI/button/MyButton";
 import {useNavigate} from "react-router";
 import {usePathName} from "../hooks/usePathName";
-import {loginPage} from "../system/router/paths";
+import {loginPage, postsMainPage} from "../system/router/paths";
 import mainPage from "./main/MainPage";
 import MyInput from "../components/UI/input/MyInput";
 
@@ -27,7 +27,7 @@ const LoginDisplay = () => {
     };
 
     useEffect(() => {
-        if(pathName !== loginPage) {
+        if (['', '/', postsMainPage, loginPage].includes(pathName)) {
             navigate(loginPage);
         }
     }, []);

@@ -1,9 +1,9 @@
-import {loginPage, mainPage, postsPage} from "./paths";
+import {loginPage, mainPage, postsMainPage} from "./paths";
 import LoginDisplay from "../../pages/LoginDisplay";
 import MainPage from "../../pages/main/MainPage";
 
 export const privateRoutes = [
-    {paths: ['', '/', mainPage, postsPage, loginPage], element: <MainPage/>}
+    {paths: ['', '/', mainPage, postsMainPage, loginPage], element: <MainPage/>}
 ]
 
 export const publicRoutes = [

@@ -15,74 +15,93 @@ const PostModal = ({setPosts, posts}) => {
     const modalWindow = useSelector(state => state.postsApp.modalWindow);
     const [selectedFile, setSelectedFile] = useState(null);
     const [mainInput, setMainInput] = useState('');
-    const [newPostId, setNewPostId] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
     const newPostsArray = [...posts];
+    const [success, setSuccess] = useState(false);
+    const [ended, setEnded] = useState(false);
 
     const [createPost, isPostCreating, creatingError] = useFetching(async () => {
+        setEnded(false);
         if (mainInput && selectedFile) {
             const response = await PostService.create(mainInput, userName);
-            setNewPostId(response.data.result.id);
-            await PostService.uploadPicture(response.data.result.id, selectedFile);
-            dispatch(setNeedLastPage(true));
-            dispatch(setPostsNeedChanging(true));
-            dispatch(setVisible(false));
+            await PostService.uploadPicture(response.data.result.id, selectedFile)
+                .then(r => {
+                    dispatch(setNeedLastPage(true));
+                    dispatch(setPostsNeedChanging(true));
+                    setSuccess(true);
+                })
+                .catch(e => {
+                    deletePost(response.data.result.id);
+                    setErrorMessage('Something is wrong, try refresh the page');
+                });
         } else {
             setErrorMessage('Choose your title and file');
         }
     });
 
-    const [deletePost, isPostDeleting, deletingError] = useFetching(async () => {
-        if (newPostId) {
-            await PostService.delete(newPostId);
-            setNewPostId('');
-        }
+    const [deletePost, isPostDeleting, deletingError] = useFetching(async (wrongPostId) => {
+        await PostService.delete(wrongPostId);
     });
 
     const [updatePost, isPostUpdating, updatingError] = useFetching(async () => {
-        const response = await PostService.update(modalWindow.postId, mainInput);
-        let newPost = response.data.result;
+        setEnded(false);
+        setSuccess(false);
+        let newPost;
+        await PostService.update(modalWindow.postId, mainInput)
+            .then(r => {
+                setSuccess(true);
+                newPost = r.data.result;
+            });
         if (selectedFile) {
-            const imgResponse = await PostService.uploadPicture(modalWindow.postId, selectedFile);
-            newPost = imgResponse.data.result;
+            await PostService.uploadPicture(modalWindow.postId, selectedFile)
+                .then(r => {
+                    newPost = r.data.result;
+                    setSuccess(true);
+                })
+                .catch(e => {
+                    setSuccess(false);
+                    setErrorMessage('Something is wrong, try refresh the page');
+                });
         } else {
             newPost.imageSrc = modalWindow.image;
         }
         newPost.comments = modalWindow.comments;
         newPostsArray[modalWindow.postIndex] = newPost;
         setPosts(newPostsArray);
-        dispatch(setVisible(false));
     });
 
     const [createComment, isCommentCreating, commentCreatingError] = useFetching(async () => {
-        await PostService.createComment(mainInput, modalWindow.postId, userName);
-        dispatch(setPostsNeedChanging(true));
-        dispatch(setVisible(false));
+        setEnded(false);
+        await PostService.createComment(mainInput, modalWindow.postId, userName)
+            .then(r => {
+                dispatch(setPostsNeedChanging(true));
+                setSuccess(true);
+            });
     });
 
     const [updateComment, isCommentUpdating, commentUpdatingError] = useFetching(async () => {
-        const response = await PostService.updateComment(modalWindow.commentId, mainInput);
-        if (response.data.result) {
-            dispatch(setPostsNeedChanging(true));
-            dispatch(setVisible(false));
-        } else {
-            setErrorMessage('Something is wrong, try refresh the page');
-        }
+        setEnded(false);
+        await PostService.updateComment(modalWindow.commentId, mainInput)
+            .then(r => {
+                setSuccess(true);
+                dispatch(setPostsNeedChanging(true));
+            })
+            .catch(e => setErrorMessage('Something is wrong, try refresh the page'));
     });
 
-    const mainButton = () => {
+    const mainButton = async () => {
         switch (modalWindow.type) {
             case 'newPost':
-                createPost();
+                await createPost().then(r => setEnded(true));
                 break;
             case 'changePost':
-                updatePost();
+                await updatePost().then(r => setEnded(true));
                 break;
             case 'newComment':
-                createComment();
+                await createComment().then(r => setEnded(true));
                 break;
             case 'changeComment':
-                updateComment();
+                await updateComment().then(r => setEnded(true));
         }
     };
 
@@ -96,8 +115,10 @@ const PostModal = ({setPosts, posts}) => {
     }, [modalWindow]);
 
     useEffect(() => {
-        deletePost();
-    }, [creatingError]);
+        if (ended && success) {
+            dispatch(setVisible(false));
+        }
+    }, [ended, success]);
 
     return (
         <>

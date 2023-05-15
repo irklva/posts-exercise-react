@@ -1,3 +1,3 @@
 export const loginPage = '/login';
-export const postsPage = '/posts';
+export const postsMainPage = '/posts';
 export const mainPage = '/main';
