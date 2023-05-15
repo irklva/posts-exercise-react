@@ -6,7 +6,7 @@ import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {useDispatch, useSelector} from "react-redux";
 import {removeUser} from "../../system/store/postsAppSlice";
 import {useNavigate} from "react-router";
-import {loginPage} from "../../system/router/paths";
+import {loginPagePath} from "../../system/router/paths";
 
 const Navbar = () => {
 
@@ -17,7 +17,7 @@ const Navbar = () => {
     const logout = () => {
         localStorage.removeItem('userName');
         dispatch(removeUser());
-        navigate(loginPage);
+        navigate(loginPagePath);
     };
 
     return (

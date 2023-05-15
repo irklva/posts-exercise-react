@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {usePathName} from "../../hooks/usePathName";
-import {loginPage, mainPage, postsMainPage} from "../../system/router/paths";
-import {useNavigate} from "react-router";
+import {loginPagePath, mainPagePath} from "../../system/router/paths";
+import {useNavigate, useParams} from "react-router";
 import PostsControl from "../../components/posts/control_panel/PostsControl";
 import PostsGallery from "../../components/posts/gallery/PostsGallery";
 import {useFetching} from "../../hooks/useFetching";
@@ -28,17 +28,22 @@ const MainPage = () => {
     const [searchInput, setSearchInput] = useState('');
     const [needLoader, setNeedLoader] = useState(true);
     const [errorText, setErrorText] = useState('');
+    const params = useParams();
 
     const [fetchPosts, arePostsLoading, postError] = useFetching(async () => {
+        console.log(changing)
         if (changing) {
             const response = await PostService.getByPages(postsPage);
+            console.log(response);
             setTotalPostsPages(response.data.totalPages);
             if (needLastPage) {
                 if (response.data.totalPages > 1) {
                     setPostsPage(response.data.totalPages);
+                    console.log('1')
                 } else {
                     setPosts([...response.data.result]);
                     dispatch(setPostsNeedChanging(false));
+                    console.log('2')
                 }
                 dispatch(setNeedLastPage(false));
             } else {
@@ -46,9 +51,11 @@ const MainPage = () => {
                     setPostsPage(response.data.totalPages);
                     dispatch(setPostsNeedChanging(false));
                     dispatch(setPostsNeedChanging(true));
+                    console.log('3')
                 } else {
                     setPosts([...response.data.result]);
                     dispatch(setPostsNeedChanging(false));
+                    console.log('4')
                 }
             }
             setNeedLoader(false);
@@ -82,8 +89,14 @@ const MainPage = () => {
     }, [changing, needLastPage]);
 
     useEffect(() => {
-        if (['', '/', postsMainPage, loginPage].includes(pathName)) {
-            navigate(mainPage);
+        console.log(params.id)
+        if (params.id) {
+            setPostsPage(params.id);
+        } else {
+            dispatch(setNeedLastPage(true));
+        }
+        if (['', '/', loginPagePath].includes(pathName)) {
+            navigate(mainPagePath);
         }
     }, []);
 

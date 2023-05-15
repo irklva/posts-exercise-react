@@ -5,8 +5,8 @@ const postsAppSlice = createSlice({
     initialState: {
         userName: '',
         modalVisible: false,
-        postsNeedChanging: true,
-        needLastPage: true,
+        postsNeedChanging: false,
+        needLastPage: false,
         modalWindow: {
             text: ''
         }

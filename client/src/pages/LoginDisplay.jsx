@@ -4,8 +4,6 @@ import {addUser} from "../system/store/postsAppSlice";
 import MyButton from "../components/UI/button/MyButton";
 import {useNavigate} from "react-router";
 import {usePathName} from "../hooks/usePathName";
-import {loginPage, postsMainPage} from "../system/router/paths";
-import mainPage from "./main/MainPage";
 import MyInput from "../components/UI/input/MyInput";
 
 const LoginDisplay = () => {
@@ -26,12 +24,6 @@ const LoginDisplay = () => {
         dispatch(addUser(nameInput));
     };
 
-    useEffect(() => {
-        if (['', '/', postsMainPage, loginPage].includes(pathName)) {
-            navigate(loginPage);
-        }
-    }, []);
-
     return (
         <div className={'container'}>
             <h1>Login with username</h1>
@@ -49,7 +41,7 @@ const LoginDisplay = () => {
                     {errorText}
                 </div>
                 <div className={'separate_group'}>
-                    <MyButton style={'login'} type="submit" onClick={() => navigate(mainPage)}>
+                    <MyButton style={'login'} type="submit">
                         Login
                     </MyButton>
                 </div>
