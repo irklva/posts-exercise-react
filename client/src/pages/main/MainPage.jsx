@@ -83,6 +83,17 @@ const MainPage = () => {
         }
     };
 
+    const pageSettings = () => {
+        if (params.id) {
+            setPostsPage(parseInt(params.id));
+        } else {
+            dispatch(setNeedLastPage(true));
+            if (['', '/', loginPagePath].includes(pathName)) {
+                navigate(mainPagePath);
+            }
+        }
+    };
+
     useEffect(() => {
         updPostsByFilter();
     }, [searchInput]);
@@ -92,14 +103,7 @@ const MainPage = () => {
     }, [changing, needLastPage]);
 
     useEffect(() => {
-        if (params.id) {
-            setPostsPage(parseInt(params.id));
-        } else {
-            dispatch(setNeedLastPage(true));
-        }
-        if (['', '/', loginPagePath].includes(pathName)) {
-            navigate(mainPagePath);
-        }
+        pageSettings();
     }, []);
 
     useEffect(() => {
