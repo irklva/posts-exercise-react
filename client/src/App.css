@@ -58,3 +58,32 @@ h6 {
     margin-right: 0;
 }
 
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    z-index: 1;
+    content: attr(data-tooltip);
+    position: absolute;
+    left: -5px; bottom: 30px;
+    background: white;
+    width: 110px;
+    color: #616073;
+    padding: 5px;
+    border: #616073 solid 2px;
+    border-radius: 10px;
+    pointer-events: none;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+}
+
+.right_element[data-tooltip]::after {
+    left: unset;
+    right: -5px;
+    bottom: 30px;
+}

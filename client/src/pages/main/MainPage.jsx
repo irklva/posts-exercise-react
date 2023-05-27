@@ -36,7 +36,7 @@ const MainPage = () => {
 
     const [fetchPosts, arePostsLoading, postError] = useFetching(async () => {
         if (postsNeedChanging) {
-            const response = await PostService.getByPages(postsPage);
+            const response = await PostService.getPostsByPage(postsPage);
             if (response.data.totalPages === 0) {
                 setPostsPage(1);
                 navigate(`/main/1`);
@@ -73,7 +73,7 @@ const MainPage = () => {
     const [filterPosts, arePostsFiltering, filterError] = useFetching(async () => {
         if (searchInput) {
             setNeedLoader(true);
-            const response = await PostService.filter(searchInput);
+            const response = await PostService.filterPosts(searchInput);
             setPosts([...response.data.result]);
             setTotalPostsPages(1);
             setNeedLoader(false);

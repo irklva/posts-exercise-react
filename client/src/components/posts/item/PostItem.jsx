@@ -27,12 +27,12 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
     const userName = useSelector(getUserName);
 
     const [deletePost, isPostDeleting, deletingError] = useFetching(async () => {
-        await PostService.delete(postData.id);
+        await PostService.deletePost(postData.id);
         dispatch(setPostsNeedChanging(true));
     });
 
     const [updatePost, isPostUpdating, updatingError] = useFetching(async (likes, dislikes) => {
-        const response = await PostService.update(postData.id, postData.title, likes, dislikes);
+        const response = await PostService.updatePost(postData.id, postData.title, likes, dislikes);
         const newPostsArray = [...posts];
         const newPost = response.data.result;
         newPost.comments = postData.comments;
@@ -101,10 +101,10 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
                     :
                     <div className={'d-flex justify-content-between mt-2'}>
                         <div className={`d-flex`}>
-                            <button className={'btn_empty'} onClick={() => newComment()}>
+                            <button data-tooltip="new post" className={'btn_empty'} onClick={() => newComment()}>
                                 <FontAwesomeIcon icon={faComment} size="xl" className={'icons'}/>
                             </button>
-                            <button className={'position-relative btn_empty'}
+                            <button data-tooltip="all posts" className={'position-relative btn_empty'}
                                     onClick={() => setCommentsVisible(!commentsVisible)}>
                                 <FontAwesomeIcon icon={faComments} size="xl" className={'icons'}/>
                                 <div
@@ -112,10 +112,10 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
                             </button>
                             {(userName === postData.username) &&
                                 <>
-                                    <button className={'btn_empty'} onClick={() => changePost()}>
+                                    <button data-tooltip="change post" className={'btn_empty'} onClick={() => changePost()}>
                                         <FontAwesomeIcon icon={faPenToSquare} size="xl" className={'icons'}/>
                                     </button>
-                                    <button className={'btn_empty'} onClick={() => deletePost()}>
+                                    <button data-tooltip="delete post" className={'btn_empty'} onClick={() => deletePost()}>
                                         <FontAwesomeIcon icon={faTrash} size="xl" className={'icons'}/>
                                     </button>
                                 </>

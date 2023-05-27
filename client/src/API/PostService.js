@@ -2,28 +2,28 @@ import axios from "axios";
 import {apiUrl} from "../utils/constants";
 
 export default class PostService {
-    static async getByPages(pageNumber = 1) {
+    static async getPostsByPage(pageNumber = 1) {
         return await axios.get(apiUrl + `post/page/${pageNumber}`);
     };
 
-    static async create(title, userName) {
+    static async createPost(title, userName) {
         return await axios.post(apiUrl + 'post/', {
             title: title,
             username: userName
         });
     };
 
-    static async uploadPicture(id, picture) {
+    static async uploadPostPicture(id, picture) {
         const formData = new FormData();
         formData.append('picture', picture);
         return await axios.post(apiUrl + `post/${id}/picture`, formData);
     }
 
-    static async delete(id) {
+    static async deletePost(id) {
         return await axios.delete(apiUrl + `post/${id}`);
     }
 
-    static async update(id, title, likes, dislikes) {
+    static async updatePost(id, title, likes, dislikes) {
         return await axios.put(apiUrl + `post/${id}`, {
             title: title,
             likes: likes,
@@ -31,7 +31,7 @@ export default class PostService {
         });
     }
 
-    static async filter(keyWord) {
+    static async filterPosts(keyWord) {
         return await axios.get(apiUrl + `post/search/${keyWord}`);
     }
 

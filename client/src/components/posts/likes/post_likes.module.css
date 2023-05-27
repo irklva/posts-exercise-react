@@ -1,0 +1,19 @@
+.likes {
+    width: 11px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #616073;
+    margin-right: 10px;
+}
+
+.likes.plus{
+    color: green;
+}
+
+.likes.minus{
+    color: indianred;
+}
+
+.pale_icon {
+    color: #b9b8cb;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faThumbsDown, faThumbsUp} from "@fortawesome/free-solid-svg-icons";
-import st from "../item/post-item.module.css";
+import st from "./post_likes.module.css";
 import {useSelector} from "react-redux";
 import {getUserName} from "../../../system/store/postsAppSlice";
 
@@ -31,7 +31,7 @@ const PostLikes = ({data, updateLikes, size}) => {
 
     return (
         <div className={'d-flex align-items-center'}>
-            <button className={'btn_empty'}>
+            <button data-tooltip="like" className={'btn_empty right_element'}>
                 <FontAwesomeIcon icon={faThumbsUp} size={size}
                                  className={`icons ${!liked && st.pale_icon}`}
                                  onClick={() => changeLike('like', likes, dislikes)}/>
@@ -39,7 +39,7 @@ const PostLikes = ({data, updateLikes, size}) => {
             <span className={`${st.likes} ${likesSum > 0 && st.plus} ${likesSum < 0 && st.minus}`}>
                             {likesSum}
                         </span>
-            <button className={'btn_empty'}>
+            <button data-tooltip="dislike" className={'btn_empty right_element'}>
                 <FontAwesomeIcon icon={faThumbsDown} size={size}
                                  className={`icons last_icon mt-1 ${!disliked && st.pale_icon}`}
                                  onClick={() => changeLike('dislike', dislikes, likes)}/>

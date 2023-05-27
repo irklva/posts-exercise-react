@@ -29,8 +29,8 @@ const PostModal = ({setPosts, posts}) => {
     const [createPost, isPostCreating, creatingError] = useFetching(async () => {
         setEnded(false);
         if (mainInput && selectedFile) {
-            const response = await PostService.create(mainInput, userName);
-            await PostService.uploadPicture(response.data.result.id, selectedFile)
+            const response = await PostService.createPost(mainInput, userName);
+            await PostService.uploadPostPicture(response.data.result.id, selectedFile)
                 .then(r => {
                     dispatch(setNeedLastPage(true));
                     dispatch(setPostsNeedChanging(true));
@@ -38,7 +38,7 @@ const PostModal = ({setPosts, posts}) => {
                 })
                 .catch(e => {
                     deletePost(response.data.result.id);
-                    setErrorMessage('Something is wrong, try refresh the page');
+                    setErrorMessage(`Error: ${e.message}`);
                 });
         } else {
             setErrorMessage('Choose your title and file');
@@ -46,27 +46,27 @@ const PostModal = ({setPosts, posts}) => {
     });
 
     const [deletePost, isPostDeleting, deletingError] = useFetching(async (wrongPostId) => {
-        await PostService.delete(wrongPostId);
+        await PostService.deletePost(wrongPostId);
     });
 
     const [updatePost, isPostUpdating, updatingError] = useFetching(async () => {
         setEnded(false);
         setSuccess(false);
         let newPost;
-        await PostService.update(modalWindow.postId, mainInput)
+        await PostService.updatePost(modalWindow.postId, mainInput)
             .then(r => {
                 setSuccess(true);
                 newPost = r.data.result;
             });
         if (selectedFile) {
-            await PostService.uploadPicture(modalWindow.postId, selectedFile)
+            await PostService.uploadPostPicture(modalWindow.postId, selectedFile)
                 .then(r => {
                     newPost = r.data.result;
                     setSuccess(true);
                 })
                 .catch(e => {
                     setSuccess(false);
-                    setErrorMessage('Something is wrong, try refresh the page');
+                    setErrorMessage(`Error: ${e.message}`);
                 });
         } else {
             newPost.imageSrc = modalWindow.image;
@@ -111,7 +111,7 @@ const PostModal = ({setPosts, posts}) => {
         }
     };
 
-    const fileInputChange = (element) => {
+    const changeFileInput = (element) => {
         setSelectedFile(element);
         setErrorMessage('');
     }
@@ -146,7 +146,7 @@ const PostModal = ({setPosts, posts}) => {
                         type={'file'}
                         id={'fileInput'}
                         accept={'image/*, image/jpeg, image/png'}
-                        onChange={(e) => fileInputChange(e.target.files[0])}
+                        onChange={(e) => changeFileInput(e.target.files[0])}
                     />
                 </div>
             }
