@@ -3,10 +3,11 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faThumbsDown, faThumbsUp} from "@fortawesome/free-solid-svg-icons";
 import st from "../item/post-item.module.css";
 import {useSelector} from "react-redux";
+import {getUserName} from "../../../system/store/postsAppSlice";
 
 const PostLikes = ({data, updateLikes, size}) => {
 
-    const userName = useSelector(state => state.postsApp.userName);
+    const userName = useSelector(getUserName);
     const likes = [...data.likes];
     const dislikes = [...data.dislikes];
     const liked = likes.includes(userName);

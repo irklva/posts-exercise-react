@@ -2,14 +2,14 @@ import React, {useEffect} from 'react';
 import MyRouter from "../system/router/MyRouter";
 import {BrowserRouter} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {addUser} from "../system/store/postsAppSlice";
+import {addUser, getUserName} from "../system/store/postsAppSlice";
 import Navbar from "./navbar/Navbar";
 
 const MainComponent = () => {
 
     const dispatch = useDispatch();
     const savedName = localStorage.getItem('userName');
-    const currentUser = useSelector(state => state.postsApp.userName);
+    const currentUser = useSelector(getUserName);
 
     useEffect(() => {
         if (savedName)

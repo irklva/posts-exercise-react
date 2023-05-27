@@ -4,10 +4,11 @@ import {privateRoutes, publicRoutes} from "./routes";
 import {Route, Routes} from "react-router";
 import ErrorPage from "../../pages/ErrorPage";
 import LoginDisplay from "../../pages/LoginDisplay";
+import {getUserName} from "../store/postsAppSlice";
 
 const MyRouter = () => {
 
-    const currentUser = useSelector(state => state.postsApp.userName);
+    const currentUser = useSelector(getUserName);
 
     return currentUser ?
         (

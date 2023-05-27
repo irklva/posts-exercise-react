@@ -2,7 +2,7 @@ import React from 'react';
 import PostItem from "../item/PostItem";
 import PostsPaginator from "../paginator/PostsPaginator";
 
-const PostsGallery = ({posts, setPosts, page, setPage, totalPages}) => {
+const PostsGallery = ({posts, setPosts, page, setPage, totalPages, needLoader}) => {
 
     return (
         <>
@@ -12,7 +12,7 @@ const PostsGallery = ({posts, setPosts, page, setPage, totalPages}) => {
                 )}
             </div>
             <div className={'components_group'}>
-                <PostsPaginator currentPage={page} pages={totalPages} changePage={setPage}/>
+                <PostsPaginator currentPage={page} pages={totalPages} changePage={setPage} needLoader={needLoader}/>
             </div>
         </>
     );

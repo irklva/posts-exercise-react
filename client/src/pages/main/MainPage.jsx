@@ -1,13 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {usePathName} from "../../hooks/usePathName";
-import {loginPagePath, mainPagePath} from "../../system/router/paths";
 import {useNavigate, useParams} from "react-router";
 import PostsControl from "../../components/posts/control_panel/PostsControl";
 import PostsGallery from "../../components/posts/gallery/PostsGallery";
 import {useFetching} from "../../hooks/useFetching";
 import PostService from "../../API/PostService";
 import {useDispatch, useSelector} from "react-redux";
-import {setNeedLastPage, setPostsNeedChanging} from "../../system/store/postsAppSlice";
+import {
+    getModalWindow,
+    getNeedLastPage,
+    getPostsNeedChanging,
+    setNeedLastPage,
+    setPostsNeedChanging
+} from "../../system/store/postsAppSlice";
 import PostModal from "../../components/posts/modal/PostModal";
 import MyModal from "../../components/UI/modal/MyModal";
 import {useDebouncedCallback} from 'use-debounce';
@@ -17,27 +21,27 @@ import st from "./main.module.css";
 const MainPage = () => {
 
     const navigate = useNavigate();
-    const pathName = usePathName();
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [postsPage, setPostsPage] = useState(1);
     const [totalPostsPages, setTotalPostsPages] = useState(0);
-    const needLastPage = useSelector(state => state.postsApp.needLastPage);
-    const changing = useSelector(state => state.postsApp.postsNeedChanging);
-    const modalWindow = useSelector(state => state.postsApp.modalWindow);
+    const [noPosts, setNoPosts] = useState(false);
+    const modalWindow = useSelector(getModalWindow);
+    const postsNeedChanging = useSelector(getPostsNeedChanging);
+    const needLastPage = useSelector(getNeedLastPage);
     const [searchInput, setSearchInput] = useState('');
     const [needLoader, setNeedLoader] = useState(true);
     const [errorText, setErrorText] = useState('');
     const params = useParams();
 
     const [fetchPosts, arePostsLoading, postError] = useFetching(async () => {
-        if (changing) {
-            setNeedLoader(true);
+        if (postsNeedChanging) {
             const response = await PostService.getByPages(postsPage);
             if (response.data.totalPages === 0) {
                 setPostsPage(1);
                 navigate(`/main/1`);
                 setPosts([]);
+                setNoPosts(true);
                 dispatch(setPostsNeedChanging(false));
             } else {
                 navigate(`/main/${postsPage}`);
@@ -60,6 +64,7 @@ const MainPage = () => {
                         dispatch(setPostsNeedChanging(false));
                     }
                 }
+                setNoPosts(false);
             }
             setNeedLoader(false);
         }
@@ -67,9 +72,12 @@ const MainPage = () => {
 
     const [filterPosts, arePostsFiltering, filterError] = useFetching(async () => {
         if (searchInput) {
+            setNeedLoader(true);
             const response = await PostService.filter(searchInput);
             setPosts([...response.data.result]);
             setTotalPostsPages(1);
+            setNeedLoader(false);
+            response.data.result.length > 0 ? setNoPosts(false) : setNoPosts(true);
         }
     });
 
@@ -88,9 +96,6 @@ const MainPage = () => {
             setPostsPage(parseInt(params.id));
         } else {
             dispatch(setNeedLastPage(true));
-            if (['', '/', loginPagePath].includes(pathName)) {
-                navigate(mainPagePath);
-            }
         }
     };
 
@@ -100,7 +105,7 @@ const MainPage = () => {
 
     useEffect(() => {
         fetchPosts();
-    }, [changing, needLastPage]);
+    }, [postsNeedChanging, needLastPage]);
 
     useEffect(() => {
         pageSettings();
@@ -134,7 +139,7 @@ const MainPage = () => {
                             Error: {errorText}
                         </div>
                     }
-                    {!posts.length &&
+                    {noPosts &&
                         <h1 className={'my-4'}>No posts yet</h1>
                     }
                     <PostsGallery
@@ -143,6 +148,7 @@ const MainPage = () => {
                         posts={posts}
                         setPosts={setPosts}
                         setPage={setPostsPage}
+                        needLoader={setNeedLoader}
                     />
                 </>
             }

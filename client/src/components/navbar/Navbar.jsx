@@ -4,7 +4,7 @@ import MyButton from "../UI/button/MyButton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {useDispatch, useSelector} from "react-redux";
-import {removeUser} from "../../system/store/postsAppSlice";
+import {getUserName, removeUser} from "../../system/store/postsAppSlice";
 import {useNavigate} from "react-router";
 import {loginPagePath} from "../../system/router/paths";
 
@@ -12,7 +12,7 @@ const Navbar = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const userName = useSelector(state => state.postsApp.userName);
+    const userName = useSelector(getUserName);
 
     const logout = () => {
         localStorage.removeItem('userName');

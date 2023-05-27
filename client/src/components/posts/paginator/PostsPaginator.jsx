@@ -4,11 +4,12 @@ import st from './posts-paginator.module.css'
 import {setPostsNeedChanging} from "../../../system/store/postsAppSlice";
 import {useDispatch} from "react-redux";
 
-const PostsPaginator = ({currentPage, pages, changePage}) => {
+const PostsPaginator = ({currentPage, pages, changePage, needLoader}) => {
 
     const dispatch = useDispatch();
 
     const downloadPage = (page) => {
+        needLoader(true);
         changePage(page);
         dispatch(setPostsNeedChanging(true));
     };

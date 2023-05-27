@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import MyInput from "../../UI/input/MyInput";
 import MyButton from "../../UI/button/MyButton";
-import {setNeedLastPage, setPostsNeedChanging, setVisible} from "../../../system/store/postsAppSlice";
+import {
+    getModalWindow,
+    getUserName,
+    setNeedLastPage,
+    setPostsNeedChanging,
+    setVisible
+} from "../../../system/store/postsAppSlice";
 import {useDispatch, useSelector} from "react-redux";
 import st from './post-modal.module.css'
 import {useFetching} from "../../../hooks/useFetching";
@@ -11,8 +17,8 @@ import MyLoader from "../../UI/loader/MyLoader";
 const PostModal = ({setPosts, posts}) => {
 
     const dispatch = useDispatch();
-    const userName = useSelector(state => state.postsApp.userName);
-    const modalWindow = useSelector(state => state.postsApp.modalWindow);
+    const userName = useSelector(getUserName);
+    const modalWindow = useSelector(getModalWindow);
     const [selectedFile, setSelectedFile] = useState(null);
     const [mainInput, setMainInput] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);

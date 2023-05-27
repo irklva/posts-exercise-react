@@ -3,7 +3,7 @@ import st from './comment-item.module.css';
 import PostLikes from "../likes/PostLikes";
 import {useFetching} from "../../../hooks/useFetching";
 import PostService from "../../../API/PostService";
-import {setModalWindow, setVisible} from "../../../system/store/postsAppSlice";
+import {getUserName, setModalWindow, setVisible} from "../../../system/store/postsAppSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -20,7 +20,7 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
     const newPost = postData;
     const [success, setSuccess] = useState(false);
     const [ended, setEnded] = useState(false);
-    const userName = useSelector(state => state.postsApp.userName);
+    const userName = useSelector(getUserName);
 
     const [updateComment, isCommentUpdating, updatingError] = useFetching(async (likes, dislikes) => {
         const response = await PostService.updateComment(commentData.id, commentData.title, likes, dislikes);

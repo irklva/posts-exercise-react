@@ -1,10 +1,11 @@
 import React from 'react';
 import st from './my-modal.module.css';
 import {useSelector} from "react-redux";
+import {isModalVisible} from "../../../system/store/postsAppSlice";
 
 const MyModal = ({title, children}) => {
 
-    const visible = useSelector(state => state.postsApp.modalVisible);
+    const visible = useSelector(isModalVisible);
 
     return (
         <>
