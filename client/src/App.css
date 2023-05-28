@@ -47,15 +47,15 @@ h6 {
     padding: 0;
     background-color: unset;
     border: unset;
+    margin-right: 10px;
+}
+
+.btn_empty.last_btn {
+    margin-right: 0;
 }
 
 .icons {
     color: #616073;
-    margin-right: 10px;
-}
-
-.icons.last_icon {
-    margin-right: 0;
 }
 
 [data-tooltip] {
@@ -80,6 +80,10 @@ h6 {
 
 [data-tooltip]:hover::after {
     opacity: 1;
+}
+
+[data-tooltip]:active::after {
+    opacity: 0;
 }
 
 .right_element[data-tooltip]::after {

@@ -39,9 +39,9 @@ const PostLikes = ({data, updateLikes, size}) => {
             <span className={`${st.likes} ${likesSum > 0 && st.plus} ${likesSum < 0 && st.minus}`}>
                             {likesSum}
                         </span>
-            <button data-tooltip="dislike" className={'btn_empty right_element'}>
+            <button data-tooltip="dislike" className={'btn_empty last_btn right_element'}>
                 <FontAwesomeIcon icon={faThumbsDown} size={size}
-                                 className={`icons last_icon mt-1 ${!disliked && st.pale_icon}`}
+                                 className={`icons mt-1 ${!disliked && st.pale_icon}`}
                                  onClick={() => changeLike('dislike', dislikes, likes)}/>
             </button>
         </div>
