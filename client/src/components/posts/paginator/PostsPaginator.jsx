@@ -1,8 +1,8 @@
 import React from 'react';
 import {getPagesArray} from "../../../utils/pages";
-import st from './posts-paginator.module.css'
-import {setPostsNeedChanging} from "../../../system/store/postsAppSlice";
+import st from './posts-paginator.module.css';
 import {useDispatch} from "react-redux";
+import {setPostsNeedChanging} from "../../../system/store/postsSlice";
 
 const PostsPaginator = ({currentPage, pages, changePage, needLoader}) => {
 

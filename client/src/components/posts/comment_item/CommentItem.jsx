@@ -3,12 +3,14 @@ import st from './comment-item.module.css';
 import PostLikes from "../likes/PostLikes";
 import {useFetching} from "../../../hooks/useFetching";
 import PostService from "../../../API/PostService";
-import {getUserName, setModalWindow, setVisible} from "../../../system/store/postsAppSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import moment from "moment/moment";
 import MyLoader from "../../UI/loader/MyLoader";
+import {getUserName} from "../../../system/store/userSlice";
+import {setNeedGlobalLoader} from "../../../system/store/loaderSlice";
+import {setModalWindow, setVisible} from "../../../system/store/modalSlice";
 
 const CommentItem = ({commentData, comments, setPosts, postIndex, postData, posts, commentIndex}) => {
 
@@ -18,31 +20,49 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
     const newPostsArray = [...posts];
     const newCommentsArray = [...comments];
     const newPost = postData;
-    const [success, setSuccess] = useState(false);
-    const [ended, setEnded] = useState(false);
     const userName = useSelector(getUserName);
 
     const [updateComment, isCommentUpdating, updatingError] = useFetching(async (likes, dislikes) => {
+        dispatch(setNeedGlobalLoader(true));
+        // const response = await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.updateComment(commentData.id, commentData.title, likes, dislikes)), 3000)
+        //     }
+        // }
         const response = await PostService.updateComment(commentData.id, commentData.title, likes, dislikes);
-        if (response.data.result) {
-            newCommentsArray[commentIndex] = response.data.result;
-            newPost.comments = newCommentsArray;
-            newPostsArray[postIndex] = newPost;
-            setPosts(newPostsArray);
-        } else {
-            setErrorText('Something is wrong, try refresh the page');
-        }
+        newCommentsArray[commentIndex] = response.data.result;
+        newPost.comments = newCommentsArray;
+        newPostsArray[postIndex] = newPost;
+        setPosts(newPostsArray);
+        dispatch(setNeedGlobalLoader(false));
     });
 
     const [deleteComment, isCommentDeleting, deletingError] = useFetching(async () => {
-        setEnded(false);
-        setSuccess(false);
+        dispatch(setNeedGlobalLoader(true));
+        // await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.deleteComment(commentData.id)
+        //             .then(r => {
+        //                 newCommentsArray.splice(commentIndex, 1);
+        //                 newPost.comments = newCommentsArray;
+        //                 newPostsArray[postIndex] = newPost;
+        //             })), 3000)
+        //     }
+        // }
         await PostService.deleteComment(commentData.id)
-            .then(() => setSuccess(true));
-        newCommentsArray.splice(commentIndex, 1);
-        newPost.comments = newCommentsArray;
-        newPostsArray[postIndex] = newPost;
+            .then(r => {
+                newCommentsArray.splice(commentIndex, 1);
+                newPost.comments = newCommentsArray;
+                newPostsArray[postIndex] = newPost;
+            })
     });
+
+    const deleting = async () => {
+        await deleteComment().then(r => {
+            setPosts(newPostsArray);
+            dispatch(setNeedGlobalLoader(false));
+        })
+    }
 
     const changeComment = () => {
         dispatch(setModalWindow({
@@ -56,17 +76,13 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
 
     useEffect(() => {
         setErrorText(updatingError);
+        dispatch(setNeedGlobalLoader(false));
     }, [updatingError]);
 
     useEffect(() => {
         setErrorText(deletingError);
+        dispatch(setNeedGlobalLoader(false));
     }, [deletingError]);
-
-    useEffect(() => {
-        if (ended && success) {
-            setPosts(newPostsArray);
-        }
-    }, [ended, success]);
 
     return (
         <div className={st.main}>
@@ -83,7 +99,7 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
                     Error: {errorText}
                 </div>
             }
-            {(isCommentUpdating || isCommentDeleting)
+            {isCommentDeleting
                 ?
                 <div className={'d-flex justify-content-center'}>
                     <MyLoader loaderHeight={27}/>
@@ -97,7 +113,7 @@ const CommentItem = ({commentData, comments, setPosts, postIndex, postData, post
                                     Edit
                                 </button>
                                 <button className={`btn_empty ${st.btn}`}
-                                        onClick={() => deleteComment().then(() => setEnded(true))}>
+                                        onClick={() => deleting()}>
                                     Delete
                                 </button>
                             </>

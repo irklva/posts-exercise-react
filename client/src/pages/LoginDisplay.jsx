@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useDispatch} from "react-redux";
-import {addUser} from "../system/store/postsAppSlice";
+import {addUser} from "../system/store/userSlice";
 import MyButton from "../components/UI/button/MyButton";
-import {useNavigate} from "react-router";
-import {usePathName} from "../hooks/usePathName";
 import MyInput from "../components/UI/input/MyInput";
 
 const LoginDisplay = () => {
@@ -11,8 +9,6 @@ const LoginDisplay = () => {
     const [nameInput, setNameInput] = useState('');
     const [errorText, setErrorText] = useState('');
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const pathName = usePathName();
 
     const login = event => {
         event.preventDefault();
@@ -24,6 +20,11 @@ const LoginDisplay = () => {
         dispatch(addUser(nameInput));
     };
 
+    const nameChanging = (e) => {
+        setNameInput(e.target.value);
+        setErrorText('');
+    };
+
     return (
         <div className={'container'}>
             <h1>Login with username</h1>
@@ -31,10 +32,7 @@ const LoginDisplay = () => {
                 <div className={'separate_group'}>
                     <MyInput
                         placeholder="Enter username"
-                        onChange={e => {
-                            setNameInput(e.target.value);
-                            setErrorText('');
-                        }}
+                        onChange={e => nameChanging(e)}
                     />
                 </div>
                 <div className={'text-danger px-4'}>

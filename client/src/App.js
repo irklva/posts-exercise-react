@@ -3,7 +3,7 @@ import {useEffect} from 'react';
 import './App.css';
 import store from './system/store/configureStore';
 import {Provider} from "react-redux";
-import MainComponent from "./components/MainComponent";
+import MainComponent from "./components/main_component/MainComponent";
 
 function App() {
 

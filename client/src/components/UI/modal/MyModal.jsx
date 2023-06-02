@@ -1,7 +1,7 @@
 import React from 'react';
 import st from './my-modal.module.css';
 import {useSelector} from "react-redux";
-import {isModalVisible} from "../../../system/store/postsAppSlice";
+import {isModalVisible} from "../../../system/store/modalSlice";
 
 const MyModal = ({title, children}) => {
 

@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faThumbsDown, faThumbsUp} from "@fortawesome/free-solid-svg-icons";
 import st from "./post_likes.module.css";
 import {useSelector} from "react-redux";
-import {getUserName} from "../../../system/store/postsAppSlice";
+import {getUserName} from "../../../system/store/userSlice";
 
 const PostLikes = ({data, updateLikes, size}) => {
 

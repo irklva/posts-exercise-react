@@ -4,7 +4,7 @@ import {privateRoutes, publicRoutes} from "./routes";
 import {Route, Routes} from "react-router";
 import ErrorPage from "../../pages/ErrorPage";
 import LoginDisplay from "../../pages/LoginDisplay";
-import {getUserName} from "../store/postsAppSlice";
+import {getUserName} from "../store/userSlice";
 
 const MyRouter = () => {
 

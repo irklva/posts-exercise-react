@@ -1,18 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import MyInput from "../../UI/input/MyInput";
 import MyButton from "../../UI/button/MyButton";
-import {
-    getModalWindow,
-    getUserName,
-    setNeedLastPage,
-    setPostsNeedChanging,
-    setVisible
-} from "../../../system/store/postsAppSlice";
 import {useDispatch, useSelector} from "react-redux";
 import st from './post-modal.module.css'
 import {useFetching} from "../../../hooks/useFetching";
 import PostService from "../../../API/PostService";
 import MyLoader from "../../UI/loader/MyLoader";
+import {getUserName} from "../../../system/store/userSlice";
+import {getModalWindow, setVisible} from "../../../system/store/modalSlice";
+import {setNeedLastPage, setPostsNeedChanging} from "../../../system/store/postsSlice";
+import {setNeedGlobalLoader} from "../../../system/store/loaderSlice";
+import {getFilterInput, setFilterInput, setNeedFiltering} from "../../../system/store/filterSlice";
 
 const PostModal = ({setPosts, posts}) => {
 
@@ -23,23 +21,24 @@ const PostModal = ({setPosts, posts}) => {
     const [mainInput, setMainInput] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
     const newPostsArray = [...posts];
-    const [success, setSuccess] = useState(false);
     const [ended, setEnded] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const filterInput = useSelector(getFilterInput);
 
     const [createPost, isPostCreating, creatingError] = useFetching(async () => {
-        setEnded(false);
         if (mainInput && selectedFile) {
             const response = await PostService.createPost(mainInput, userName);
             await PostService.uploadPostPicture(response.data.result.id, selectedFile)
                 .then(r => {
                     dispatch(setNeedLastPage(true));
-                    dispatch(setPostsNeedChanging(true));
                     setSuccess(true);
                 })
                 .catch(e => {
                     deletePost(response.data.result.id);
                     setErrorMessage(`Error: ${e.message}`);
+                    dispatch(setNeedGlobalLoader(false));
                 });
+            dispatch(setFilterInput(''));
         } else {
             setErrorMessage('Choose your title and file');
         }
@@ -50,64 +49,92 @@ const PostModal = ({setPosts, posts}) => {
     });
 
     const [updatePost, isPostUpdating, updatingError] = useFetching(async () => {
-        setEnded(false);
-        setSuccess(false);
         let newPost;
         await PostService.updatePost(modalWindow.postId, mainInput)
             .then(r => {
-                setSuccess(true);
                 newPost = r.data.result;
             });
         if (selectedFile) {
             await PostService.uploadPostPicture(modalWindow.postId, selectedFile)
                 .then(r => {
                     newPost = r.data.result;
+                    newPost.comments = modalWindow.comments;
+                    newPostsArray[modalWindow.postIndex] = newPost;
+                    setPosts(newPostsArray);
                     setSuccess(true);
                 })
                 .catch(e => {
-                    setSuccess(false);
                     setErrorMessage(`Error: ${e.message}`);
                 });
         } else {
             newPost.imageSrc = modalWindow.image;
+            newPost.comments = modalWindow.comments;
+            newPostsArray[modalWindow.postIndex] = newPost;
+            setPosts(newPostsArray);
+            setSuccess(true);
         }
-        newPost.comments = modalWindow.comments;
-        newPostsArray[modalWindow.postIndex] = newPost;
-        setPosts(newPostsArray);
     });
 
     const [createComment, isCommentCreating, commentCreatingError] = useFetching(async () => {
-        setEnded(false);
+        // await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.createComment(mainInput, modalWindow.postId, userName)
+        //             .then(r => {
+        //                 setSuccess(true);
+        //             })), 3000)
+        //     }
+        // }
         await PostService.createComment(mainInput, modalWindow.postId, userName)
             .then(r => {
-                dispatch(setPostsNeedChanging(true));
                 setSuccess(true);
             });
     });
 
     const [updateComment, isCommentUpdating, commentUpdatingError] = useFetching(async () => {
-        setEnded(false);
+        // await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.updateComment(modalWindow.commentId, mainInput)
+        //             .then(r => {
+        //                 setSuccess(true);
+        //             })), 3000)
+        //     }
+        // }
         await PostService.updateComment(modalWindow.commentId, mainInput)
             .then(r => {
                 setSuccess(true);
-                dispatch(setPostsNeedChanging(true));
-            })
-            .catch(e => setErrorMessage('Something is wrong, try refresh the page'));
+            });
     });
 
     const mainButton = async () => {
         switch (modalWindow.type) {
             case 'newPost':
-                await createPost().then(r => setEnded(true));
+                await createPost().then(r => {
+                    dispatch(setPostsNeedChanging(true));
+                    setEnded(true);
+                });
                 break;
             case 'changePost':
                 await updatePost().then(r => setEnded(true));
                 break;
             case 'newComment':
-                await createComment().then(r => setEnded(true));
+                await createComment().then(r => {
+                    if (filterInput) {
+                        dispatch(setNeedFiltering(true));
+                    } else {
+                        dispatch(setPostsNeedChanging(true));
+                    }
+                    setEnded(true);
+                });
                 break;
             case 'changeComment':
-                await updateComment().then(r => setEnded(true));
+                await updateComment().then(r => {
+                    if (filterInput) {
+                        dispatch(setNeedFiltering(true));
+                    } else {
+                        dispatch(setPostsNeedChanging(true));
+                    }
+                    setEnded(true);
+                });
         }
     };
 
@@ -118,13 +145,23 @@ const PostModal = ({setPosts, posts}) => {
 
     useEffect(() => {
         setMainInput(modalWindow.text);
-    }, [modalWindow]);
+    }, [modalWindow.text]);
 
     useEffect(() => {
         if (ended && success) {
             dispatch(setVisible(false));
+        } else if (ended && !success) {
+            dispatch(setNeedGlobalLoader(false));
         }
     }, [ended, success]);
+
+    useEffect(() => {
+        if (isPostCreating || isPostUpdating || isCommentCreating || isCommentUpdating) {
+            dispatch(setNeedGlobalLoader(true));
+        } else {
+            dispatch(setNeedGlobalLoader(false));
+        }
+    }, [isPostCreating, isPostUpdating, isCommentCreating, isCommentUpdating]);
 
     return (
         <>

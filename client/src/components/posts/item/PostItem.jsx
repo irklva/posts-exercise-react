@@ -11,11 +11,15 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useFetching} from "../../../hooks/useFetching";
 import PostService from "../../../API/PostService";
 import {useDispatch, useSelector} from "react-redux";
-import {setPostsNeedChanging, setModalWindow, setVisible, getUserName} from "../../../system/store/postsAppSlice";
 import CommentItem from "../comment_item/CommentItem";
 import PostLikes from "../likes/PostLikes";
 import moment from "moment";
 import MyLoader from "../../UI/loader/MyLoader";
+import {getUserName} from "../../../system/store/userSlice";
+import {setNeedGlobalLoader} from "../../../system/store/loaderSlice";
+import {setPostsNeedChanging} from "../../../system/store/postsSlice";
+import {setModalWindow, setVisible} from "../../../system/store/modalSlice";
+import {getFilterInput, setNeedFiltering} from "../../../system/store/filterSlice";
 
 const PostItem = ({postData, postIndex, posts, setPosts}) => {
 
@@ -25,19 +29,41 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
     const formattedDate = moment(parseInt(postData.date)).format('DD.MM.YY HH:mm');
     const [errorText, setErrorText] = useState('');
     const userName = useSelector(getUserName);
+    const newPostsArray = [...posts];
+    const filterInput = useSelector(getFilterInput);
 
     const [deletePost, isPostDeleting, deletingError] = useFetching(async () => {
+        dispatch(setNeedGlobalLoader(true));
+        // await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.deletePost(postData.id)), 3000)
+        //     }
+        // }
         await PostService.deletePost(postData.id);
-        dispatch(setPostsNeedChanging(true));
+        if (filterInput) {
+            dispatch(setNeedFiltering(true));
+        } else {
+            dispatch(setPostsNeedChanging(true));
+        }
     });
 
     const [updatePost, isPostUpdating, updatingError] = useFetching(async (likes, dislikes) => {
+        dispatch(setNeedGlobalLoader(true));
+        // const response = await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.updatePost(postData.id, postData.title, likes, dislikes)), 3000)
+        //     }
+        // }
         const response = await PostService.updatePost(postData.id, postData.title, likes, dislikes);
-        const newPostsArray = [...posts];
-        const newPost = response.data.result;
-        newPost.comments = postData.comments;
-        newPostsArray[postIndex] = newPost;
-        setPosts(newPostsArray);
+        if (response.data.result) {
+            const newPost = response.data.result;
+            newPost.comments = postData.comments;
+            newPostsArray[postIndex] = newPost;
+            setPosts(newPostsArray);
+        } else {
+            setErrorText('Something is wrong, try refresh the page');
+        }
+        dispatch(setNeedGlobalLoader(false));
     });
 
     const changePost = () => {
@@ -66,10 +92,12 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
 
     useEffect(() => {
         setErrorText(deletingError);
+        dispatch(setNeedGlobalLoader(false));
     }, [deletingError]);
 
     useEffect(() => {
         setErrorText(updatingError);
+        dispatch(setNeedGlobalLoader(false));
     }, [updatingError]);
 
     return (
@@ -93,7 +121,7 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
                         Error: {errorText}
                     </div>
                 }
-                {(isPostUpdating || isPostDeleting)
+                {isPostDeleting
                     ?
                     <div className={'d-flex justify-content-center'}>
                         <MyLoader loaderHeight={36}/>
@@ -101,10 +129,10 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
                     :
                     <div className={'d-flex justify-content-between mt-2'}>
                         <div className={`d-flex`}>
-                            <button data-tooltip="new post" className={'btn_empty'} onClick={() => newComment()}>
+                            <button data-tooltip="new comment" className={'btn_empty'} onClick={() => newComment()}>
                                 <FontAwesomeIcon icon={faComment} size="xl" className={'icons'}/>
                             </button>
-                            <button data-tooltip="all posts" className={'position-relative btn_empty'}
+                            <button data-tooltip="all comments" className={'position-relative btn_empty'}
                                     onClick={() => setCommentsVisible(!commentsVisible)}>
                                 <FontAwesomeIcon icon={faComments} size="xl" className={'icons'}/>
                                 <div
@@ -112,10 +140,12 @@ const PostItem = ({postData, postIndex, posts, setPosts}) => {
                             </button>
                             {(userName === postData.username) &&
                                 <>
-                                    <button data-tooltip="change post" className={'btn_empty'} onClick={() => changePost()}>
+                                    <button data-tooltip="change post" className={'btn_empty'}
+                                            onClick={() => changePost()}>
                                         <FontAwesomeIcon icon={faPenToSquare} size="xl" className={'icons'}/>
                                     </button>
-                                    <button data-tooltip="delete post" className={'btn_empty'} onClick={() => deletePost()}>
+                                    <button data-tooltip="delete post" className={'btn_empty'}
+                                            onClick={() => deletePost()}>
                                         <FontAwesomeIcon icon={faTrash} size="xl" className={'icons'}/>
                                     </button>
                                 </>

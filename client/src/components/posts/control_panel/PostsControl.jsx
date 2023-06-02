@@ -1,12 +1,14 @@
 import React from 'react';
 import MyInput from "../../UI/input/MyInput";
 import MyButton from "../../UI/button/MyButton";
-import {useDispatch} from "react-redux";
-import {setModalWindow, setVisible} from "../../../system/store/postsAppSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {setModalWindow, setVisible} from "../../../system/store/modalSlice";
+import {getFilterInput, setFilterInput} from "../../../system/store/filterSlice";
 
-const PostsControl = ({setInput}) => {
+const PostsControl = () => {
 
     const dispatch = useDispatch();
+    const filterInput = useSelector(getFilterInput);
 
     const newPost = () => {
         dispatch(setModalWindow({
@@ -22,7 +24,8 @@ const PostsControl = ({setInput}) => {
             <MyButton style={'body'} onClick={() => newPost()}>Add post</MyButton>
             <MyInput
                 placeholder={'Search...'}
-                onChange={e => setInput(e.target.value)}
+                onChange={e => dispatch(setFilterInput(e.target.value))}
+                value={filterInput}
             />
         </div>
     );

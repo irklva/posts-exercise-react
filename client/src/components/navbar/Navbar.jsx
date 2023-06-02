@@ -4,7 +4,7 @@ import MyButton from "../UI/button/MyButton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {useDispatch, useSelector} from "react-redux";
-import {getUserName, removeUser} from "../../system/store/postsAppSlice";
+import {getUserName, removeUser} from "../../system/store/userSlice";
 import {useNavigate} from "react-router";
 import {loginPagePath} from "../../system/router/paths";
 

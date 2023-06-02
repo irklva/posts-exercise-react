@@ -5,18 +5,20 @@ import PostsGallery from "../../components/posts/gallery/PostsGallery";
 import {useFetching} from "../../hooks/useFetching";
 import PostService from "../../API/PostService";
 import {useDispatch, useSelector} from "react-redux";
-import {
-    getModalWindow,
-    getNeedLastPage,
-    getPostsNeedChanging,
-    setNeedLastPage,
-    setPostsNeedChanging
-} from "../../system/store/postsAppSlice";
 import PostModal from "../../components/posts/modal/PostModal";
 import MyModal from "../../components/UI/modal/MyModal";
 import {useDebouncedCallback} from 'use-debounce';
 import MyLoader from "../../components/UI/loader/MyLoader";
 import st from "./main.module.css";
+import {
+    getNeedLastPage,
+    getPostsNeedChanging,
+    setNeedLastPage,
+    setPostsNeedChanging
+} from "../../system/store/postsSlice";
+import {setNeedGlobalLoader} from "../../system/store/loaderSlice";
+import {getModalWindow} from "../../system/store/modalSlice";
+import {getFilterInput, getNeedFiltering, setNeedFiltering} from "../../system/store/filterSlice";
 
 const MainPage = () => {
 
@@ -29,62 +31,79 @@ const MainPage = () => {
     const modalWindow = useSelector(getModalWindow);
     const postsNeedChanging = useSelector(getPostsNeedChanging);
     const needLastPage = useSelector(getNeedLastPage);
-    const [searchInput, setSearchInput] = useState('');
+    const filterInput = useSelector(getFilterInput);
     const [needLoader, setNeedLoader] = useState(true);
     const [errorText, setErrorText] = useState('');
+    const needFiltering = useSelector(getNeedFiltering);
     const params = useParams();
 
     const [fetchPosts, arePostsLoading, postError] = useFetching(async () => {
-        if (postsNeedChanging) {
-            const response = await PostService.getPostsByPage(postsPage);
-            if (response.data.totalPages === 0) {
-                setPostsPage(1);
-                navigate(`/main/1`);
-                setPosts([]);
-                setNoPosts(true);
-                dispatch(setPostsNeedChanging(false));
-            } else {
-                navigate(`/main/${postsPage}`);
-                setTotalPostsPages(response.data.totalPages);
-                if (needLastPage) {
-                    if (response.data.totalPages > 1) {
-                        setPostsPage(response.data.totalPages);
-                    } else {
-                        setPosts([...response.data.result]);
-                        dispatch(setPostsNeedChanging(false));
-                    }
-                    dispatch(setNeedLastPage(false));
+        dispatch(setNeedGlobalLoader(true));
+        // const response = await {
+        //     then(r) {
+        //         setTimeout(() => r(PostService.getPostsByPage(postsPage)), 3000)
+        //     }
+        // }
+        const response = await PostService.getPostsByPage(postsPage);
+        if (response.data.totalPages === 0) {
+            setPostsPage(1);
+            navigate(`/main/1`);
+            setPosts([]);
+            setNoPosts(true);
+            dispatch(setPostsNeedChanging(false));
+            dispatch(setNeedGlobalLoader(false));
+        } else {
+            navigate(`/main/${postsPage}`);
+            setTotalPostsPages(response.data.totalPages);
+            if (needLastPage) {
+                if (response.data.totalPages > 1) {
+                    setPostsPage(response.data.totalPages);
                 } else {
-                    if (response.data.page > response.data.totalPages) {
-                        setPostsPage(response.data.totalPages);
-                        dispatch(setPostsNeedChanging(false));
-                        dispatch(setPostsNeedChanging(true));
-                    } else {
-                        setPosts([...response.data.result]);
-                        dispatch(setPostsNeedChanging(false));
-                    }
+                    setPosts([...response.data.result]);
+                    dispatch(setPostsNeedChanging(false));
+                    dispatch(setNeedGlobalLoader(false));
                 }
-                setNoPosts(false);
+                dispatch(setNeedLastPage(false));
+            } else {
+                if (response.data.page > response.data.totalPages) {
+                    setPostsPage(response.data.totalPages);
+                    dispatch(setPostsNeedChanging(false));
+                    dispatch(setPostsNeedChanging(true));
+                } else {
+                    setPosts([...response.data.result]);
+                    dispatch(setPostsNeedChanging(false));
+                    dispatch(setNeedGlobalLoader(false));
+                }
             }
-            setNeedLoader(false);
+            setNoPosts(false);
         }
+        setNeedLoader(false);
     });
 
     const [filterPosts, arePostsFiltering, filterError] = useFetching(async () => {
-        if (searchInput) {
-            setNeedLoader(true);
-            const response = await PostService.filterPosts(searchInput);
+        dispatch(setNeedGlobalLoader(true));
+        dispatch(setNeedFiltering(true));
+        if (filterInput) {
+            // const response = await {
+            //     then(r) {
+            //         setTimeout(() => r(PostService.filterPosts(filterInput)), 3000)
+            //     }
+            // }
+            const response = await PostService.filterPosts(filterInput);
             setPosts([...response.data.result]);
             setTotalPostsPages(1);
-            setNeedLoader(false);
             response.data.result.length > 0 ? setNoPosts(false) : setNoPosts(true);
+            dispatch(setNeedFiltering(false));
+            dispatch(setNeedGlobalLoader(false));
         }
+        setNeedLoader(false);
     });
 
     const debouncedFilterPosts = useDebouncedCallback(filterPosts, 1000);
 
     const updPostsByFilter = () => {
-        if (searchInput) {
+        setNeedLoader(true);
+        if (filterInput) {
             debouncedFilterPosts();
         } else {
             dispatch(setPostsNeedChanging(true));
@@ -99,35 +118,54 @@ const MainPage = () => {
         }
     };
 
-    useEffect(() => {
-        updPostsByFilter();
-    }, [searchInput]);
+    const errorCatch = (errorText) => {
+        if (postError) {
+            setNeedLoader(false);
+            setErrorText(errorText);
+            dispatch(setPostsNeedChanging(false));
+            dispatch(setNeedGlobalLoader(false));
+        } else {
+            setErrorText('');
+        }
+    };
 
     useEffect(() => {
-        fetchPosts();
+        updPostsByFilter();
+    }, [filterInput]);
+
+    useEffect(() => {
+        if (postsNeedChanging) {
+            fetchPosts();
+        }
     }, [postsNeedChanging, needLastPage]);
+
+    useEffect(() => {
+        dispatch(setNeedGlobalLoader(false));
+        if (needFiltering) {
+            filterPosts();
+        }
+    }, [needFiltering]);
 
     useEffect(() => {
         pageSettings();
     }, []);
 
     useEffect(() => {
-        setErrorText(postError);
+        errorCatch(postError);
     }, [postError]);
 
     useEffect(() => {
-        setErrorText(filterError);
+        errorCatch(filterError);
     }, [filterError]);
+
 
     return (
         <>
             <MyModal title={modalWindow.modalTitle}>
                 <PostModal setPosts={setPosts} posts={posts}/>
             </MyModal>
-            <PostsControl
-                setInput={setSearchInput}
-            />
-            {((needLoader && arePostsLoading) || arePostsFiltering)
+            <PostsControl/>
+            {needLoader && (postsNeedChanging || needFiltering)
                 ?
                 <div className={'h-auto d-flex justify-content-center'}>
                     <MyLoader/>
