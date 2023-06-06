@@ -81,9 +81,9 @@ const MainPage = () => {
     });
 
     const [filterPosts, arePostsFiltering, filterError] = useFetching(async () => {
-        dispatch(setNeedGlobalLoader(true));
-        dispatch(setNeedFiltering(true));
         if (filterInput) {
+            dispatch(setNeedGlobalLoader(true));
+            dispatch(setNeedFiltering(true));
             // const response = await {
             //     then(r) {
             //         setTimeout(() => r(PostService.filterPosts(filterInput)), 3000)
