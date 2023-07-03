@@ -3,7 +3,7 @@ import {useSelector} from "react-redux";
 import {privateRoutes, publicRoutes} from "./routes";
 import {Route, Routes} from "react-router";
 import ErrorPage from "../../pages/ErrorPage";
-import LoginDisplay from "../../pages/LoginDisplay";
+import LoginPage from "../../pages/LoginPage";
 import {getUserName} from "../store/userSlice";
 
 const MyRouter = () => {
@@ -37,7 +37,7 @@ const MyRouter = () => {
                         />
                     )
                 )}
-                <Route element={<LoginDisplay/>} path='*'/>
+                <Route element={<LoginPage/>} path='*'/>
             </Routes>
         );
 };

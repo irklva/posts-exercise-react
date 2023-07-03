@@ -4,7 +4,7 @@ import {addUser} from "../system/store/userSlice";
 import MyButton from "../components/UI/button/MyButton";
 import MyInput from "../components/UI/input/MyInput";
 
-const LoginDisplay = () => {
+const LoginPage = () => {
 
     const [nameInput, setNameInput] = useState('');
     const [errorText, setErrorText] = useState('');
@@ -48,4 +48,4 @@ const LoginDisplay = () => {
     );
 };
 
-export default LoginDisplay;
+export default LoginPage;

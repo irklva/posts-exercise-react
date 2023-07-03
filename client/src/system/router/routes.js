@@ -1,5 +1,5 @@
 import {loginPagePath, mainIdPage, mainPagePath} from "./paths";
-import LoginDisplay from "../../pages/LoginDisplay";
+import LoginPage from "../../pages/LoginPage";
 import MainPage from "../../pages/main/MainPage";
 
 export const privateRoutes = [
@@ -7,5 +7,5 @@ export const privateRoutes = [
 ]
 
 export const publicRoutes = [
-    {paths: ['', '/', loginPagePath], element: <LoginDisplay/>}
+    {paths: ['', '/', loginPagePath], element: <LoginPage/>}
 ]
